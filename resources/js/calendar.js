@@ -6,6 +6,8 @@ import axios from 'axios';
 // idがcalendarのDOMを取得
 var calendarEl = document.getElementById("calendar");
 
+let click = 0;
+let oneClickTimer;
 // カレンダーの設定
 let calendar = new Calendar(calendarEl, {
     plugins: [interactionPlugin, dayGridPlugin],
@@ -43,6 +45,61 @@ let calendar = new Calendar(calendarEl, {
                 .catch(() => {
                     // バリデーションエラーなど
                     alert("登録に失敗しました");
+                });
+        }
+    },
+    events: function (info, successCallback, failureCallback) {
+        axios
+            .post("/calendar/event", {
+                start_date: info.start.valueOf(),
+                end_date: info.end.valueOf(),
+            })
+            .then(response => {
+                // 追加したイベントを削除
+                calendar.removeAllEvents();
+                // カレンダーに読み込み
+                successCallback(response.data);
+            })
+            .catch(() => {
+                // バリデーションエラーなど
+                alert("取得に失敗しました");
+            });
+    },
+    eventDrop: function(info) {
+    const id = info.event._def.publicId;  // イベントのDBに登録されているidを取得
+    axios
+        .post(`/calendar/${id}`, {
+            start_date: info.event._instance.range.start.valueOf(),
+            end_date: info.event._instance.range.end.valueOf(),
+        })
+        .then(() => {
+            alert("登録に成功しました！");
+        })
+        .catch(() => {
+            // バリデーションエラーなど
+            alert("登録に失敗しました");
+        });
+},
+ eventClick: function(info) {
+        click++;
+        if (click === 1) {
+            // 略
+        } else if (click === 2) {
+            clearTimeout(oneClickTimer);  // クリック1回時の処理を削除
+            click = 0;
+
+            // 削除処理
+            if(!confirm('イベントを削除しますか？')) return false;
+
+            const id = info.event._def.publicId;
+            axios
+                .post(`/calendar/${id}/delete`)
+                .then(() => {
+                    info.event.remove();  // カレンダーからイベントを削除
+                    alert("削除に成功しました！");
+                })
+                .catch(() => {
+                    alert("削除に失敗しました");
                 });
         }
     },
