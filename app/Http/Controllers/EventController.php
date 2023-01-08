@@ -7,6 +7,13 @@ use App\Models\Event;
 
 class EventController extends Controller
 {
+    public function update(Request $request, Event $event)
+{
+    // 日付に変換。JavaScriptのタイムスタンプはミリ秒なので秒に変換
+    $event->start_date = date('Y-m-d', $request->input('start_date') / 1000);
+    $event->end_date = date('Y-m-d', $request->input('end_date') / 1000);
+    $event->save();
+}
     public function store(Request $request)
     {
         $event = new Event;
@@ -32,9 +39,15 @@ class EventController extends Controller
             'title as title',
             'id'
         )
+    
+
         // FullCalendarの表示範囲のみ表示
         ->where('end_date', '>', $start_date)
         ->where('start_date', '<', $end_date)
         ->get();
+}
+public function delete(Request $request, Event $event)
+{
+    $event->delete();
 }
 }
