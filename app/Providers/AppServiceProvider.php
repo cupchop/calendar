@@ -6,7 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
+
+/**
      * Register any application services.
      *
      * @return void
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+\URL::forceScheme('https');
+  $this->app['request']->server->set('HTTPS','on');
+  
     }
 }
