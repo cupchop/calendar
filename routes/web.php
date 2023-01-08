@@ -1,6 +1,7 @@
 <?php
-
+use App\Http\Controllers\EventController;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::view('/calendar', 'calendar/calendar');
+Route::post('/calendar', [EventController::class, 'store'])->name('event.store');
+Route::post('/calendar/event', [EventController::class, 'getEvent'])->name('event.get');
