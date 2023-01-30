@@ -22,11 +22,13 @@ class EventController extends Controller
         $event->start_date = date('Y-m-d', $request->input('start_date') / 1000);
         $event->end_date = date('Y-m-d', $request->input('end_date') / 1000);
         $event->title = $request->input('title');
+        $event->body = $request->input('body');
         $event->save();
+        return $event;
     }
     public function getEvent(Request $request)
 {
-    // カレンダー表示期間
+       // カレンダー表示期間
     $start_date = date('Y-m-d', $request->input('start_date') / 1000);
     $end_date = date('Y-m-d', $request->input('end_date') / 1000);
 
@@ -37,6 +39,7 @@ class EventController extends Controller
             'start_date as start',
             'end_date as end',
             'title as title',
+            'body as description',
             'id'
         )
     
